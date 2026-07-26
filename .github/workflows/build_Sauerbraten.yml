@@ -7,6 +7,9 @@ on:
     branches: [ main, master ]  
   workflow_dispatch:  
   
+permissions:  
+  contents: write  
+  
 jobs:  
   build:  
     runs-on: windows-2022  
@@ -40,4 +43,13 @@ jobs:
         uses: actions/upload-artifact@v4  
         with:  
           name: sauerbraten-win32  
-          path: bin/sauerbraten.exe
+          path: bin/sauerbraten.exe  
+  
+      - name: Publish to GitHub Release  
+        if: github.event_name != 'pull_request'  
+        uses: softprops/action-gh-release@v2  
+        with:  
+          tag_name: latest  
+          name: Latest Build (${{ github.sha }})  
+          prerelease: true  
+          files: bin*/sauerbraten.exe
