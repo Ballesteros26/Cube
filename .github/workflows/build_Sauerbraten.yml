@@ -30,20 +30,24 @@ jobs:
       - name: Find all sauerbraten.exe (diagnostic)  
         run: Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter sauerbraten.exe | Select-Object FullName, Length | Format-Table -AutoSize  
   
-      - name: List workspace root (diagnostic)  
-        run: Get-ChildItem -Path $env:GITHUB_WORKSPACE | Select-Object Name, Attributes | Format-Table -AutoSize  
+      - name: Rename artifacts to avoid filename conflicts  
+        run: Copy-Item bin64/sauerbraten.exe sauerbraten-x64.exe; Copy-Item bin64/sauerbraten.pdb sauerbraten-x64.pdb; Copy-Item bin/sauerbraten.exe sauerbraten-win32.exe; Copy-Item bin/sauerbraten.pdb sauerbraten-win32.pdb  
   
       - name: Upload x64 artifact  
         uses: actions/upload-artifact@v4  
         with:  
           name: sauerbraten-win64  
-          path: bin64/sauerbraten.exe  
+          path: |  
+            sauerbraten-x64.exe  
+            sauerbraten-x64.pdb  
   
       - name: Upload Win32 artifact  
         uses: actions/upload-artifact@v4  
         with:  
           name: sauerbraten-win32  
-          path: bin/sauerbraten.exe  
+          path: |  
+            sauerbraten-win32.exe  
+            sauerbraten-win32.pdb  
   
       - name: Publish to GitHub Release  
         if: github.event_name != 'pull_request'  
@@ -52,4 +56,8 @@ jobs:
           tag_name: latest  
           name: Latest Build (${{ github.sha }})  
           prerelease: true  
-          files: bin*/sauerbraten.exe
+          files: |  
+            sauerbraten-x64.exe  
+            sauerbraten-x64.pdb  
+            sauerbraten-win32.exe  
+            sauerbraten-win32.pdb
